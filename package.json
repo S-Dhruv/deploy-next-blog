@@ -14,7 +14,7 @@
     "template-deploy"
   ],
   "scripts": {
-    "build": "turbo build --filter='./packages/*' --filter='./lib/*' && cd template-deploy && bun run build",
+    "build": "turbo build --filter='./packages/*' --filter='./lib/*'",
     "build:packages": "turbo build --filter='./packages/*'",
     "build:lib": "turbo build --filter='./lib/*'",
     "dev": "turbo build --filter='./packages/*' --filter='./lib/*' && turbo dev --filter='./packages/*' --filter='./lib/*' --concurrency=30",
