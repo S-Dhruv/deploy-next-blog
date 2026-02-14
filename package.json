@@ -10,7 +10,8 @@
     "plugins/*",
     "plugins/seo/*",
     "plugins/internal/*",
-    "apps/*"
+    "apps/*",
+    "template-deploy/*"
   ],
   "scripts": {
     "build": "turbo build --filter='./packages/*' --filter='./lib/*'",
@@ -40,7 +41,6 @@
     "secure"
   ],
   "dependencies": {
-    "gemini": "^7.5.2",
     "moment": "^2.30.1",
     "rimraf": "^6.1.2",
     "vite": "^7.3.1"

@@ -1,5 +1,4 @@
-import {FileDBAdapter, MongoDBAdapter} from "@supergrowthai/next-blog/adapters";
-import path from "path";
+import * as adapters from "@supergrowthai/next-blog/adapters";
 import type {DatabaseAdapter} from "@supergrowthai/next-blog";
 import {MongoClient} from "mongodb";
 import path from "path";
