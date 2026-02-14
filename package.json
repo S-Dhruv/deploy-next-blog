@@ -26,7 +26,8 @@
     "typecheck:lib": "turbo typecheck --filter='./lib/*'",
     "publint": "turbo publint --filter='./packages/*' --filter='./lib/*'",
     "app:dev": "turbo dev --filter='./apps/test-app'",
-    "app:build": "turbo build --filter='./apps/test-app'"
+    "app:build": "turbo build --filter='./apps/test-app'",
+    "dev:template": "turbo build --filter='./packages/*' && cd template-deploy && bun install && bun run dev"
   },
   "keywords": [
     "vite",
