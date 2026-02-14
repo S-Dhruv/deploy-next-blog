@@ -1,17 +1,8 @@
-import nextBlog, {FileDBAdapter, MongoAdapter, S3Adapter, FileSystemStorage} from "@supergrowthai/next-blog"
+import nextBlog, {S3Adapter, FileSystemStorage} from "@supergrowthai/next-blog"
 import path from 'path';
+import {dbProvider} from "@/lib/db";
 
 // --- CONFIGURATION ---
-const isProduction = process.env.NODE_ENV === "production";
-
-// 1. Database: MongoDB (Prod) OR FileDB (Dev)
-const dbProvider = async () => {
-    if (isProduction && process.env.MONGODB_URI) {
-        return new MongoAdapter(process.env.MONGODB_URI, process.env.MONGODB_DB_NAME || 'nextblog');
-    }
-    // Fallback to FileDB
-    return new FileDBAdapter(path.join(process.cwd(), "blog-data"));
-};
 
 // 2. Storage: S3 (Prod) OR Local Filesystem (Dev)
 const storageProvider = async () => {

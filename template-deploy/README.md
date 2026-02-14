@@ -8,6 +8,7 @@ Click the button below to deploy your own instance of Next-Blog to Vercel:
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fcaptadexp%2Fnext-blog%2Ftree%2Fmain%2Ftemplate-deploy&env=MONGODB_URI,MONGODB_DB_NAME,SESSION_SECRET,ADMIN_EMAIL,S3_BUCKET,S3_REGION,S3_ACCESS_KEY,S3_SECRET_KEY&project-name=my-next-blog&repository-name=my-next-blog-cms)
 
+
 ## 📋 Environment Variables
 
 When deploying, Vercel will ask for the following Environment Variables:
