@@ -1,12 +1,37 @@
-import {FileDBAdapter, MongoAdapter} from "@supergrowthai/next-blog";
+import {FileDBAdapter, MongoDBAdapter} from "@supergrowthai/next-blog/adapters";
 import path from "path";
+import type {DatabaseAdapter} from "@supergrowthai/next-blog";
+import {MongoClient} from "mongodb";
+import path from "path";
+import fs from "fs";
 
-const isProduction = process.env.NODE_ENV === "production";
+const useMongo = process.env.VERCEL === "1" && Boolean(process.env.MONGO_DB_URL);
 
-export const dbProvider = async () => {
-    if (isProduction && process.env.MONGODB_URI) {
-        return new MongoAdapter(process.env.MONGODB_URI, process.env.MONGODB_DB_NAME || 'nextblog');
+let dbProvider: () => Promise<DatabaseAdapter>;
+
+if (useMongo) {
+    const mongoUrl = process.env.MONGO_DB_URL!;
+
+    // Cache the client promise across invocations
+    const globalAny: any = globalThis;
+    if (!globalAny._mongoClientPromise) {
+        globalAny._mongoClientPromise = new MongoClient(mongoUrl).connect();
     }
-    // Fallback to FileDB
-    return new FileDBAdapter(path.join(process.cwd(), "blog-data"));
-};
+    const clientPromise = globalAny._mongoClientPromise;
+
+    dbProvider = async () => {
+        const client = await clientPromise;
+        return new adapters.MongoDBAdapter(process.env.MONGO_DB_NAME || "next-blog", client);
+    };
+    console.log("Using MongoDBAdapter.");
+} else {
+    // Use FileDBAdapter for local development by default
+    const dataPath = path.join(process.cwd(), 'blog-data');
+    if (!fs.existsSync(dataPath)) {
+        fs.mkdirSync(dataPath, {recursive: true});
+    }
+    dbProvider = async () => new adapters.FileDBAdapter(`${dataPath}/`);
+    console.log("Using FileDBAdapter for local development. Set MONGO_DB_URL to use MongoDB locally.");
+}
+
+export {dbProvider};

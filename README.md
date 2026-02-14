@@ -124,7 +124,7 @@ next-blog/
 - **UI Framework**: Preact for dashboard, React for plugins
 
 ## 🚀 Quick Start
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FS-Dhruv%2Fdeploy-next-blog&project-name=my-next-blog&repository-name=my-next-blog-cms&root-directory=template-deploy&installCommand=bun%20install&buildCommand=bun%20run%20build)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FS-Dhruv%2Fdeploy-next-blog&project-name=my-next-blog&repository-name=my-next-blog-cms&installCommand=bun%20install&buildCommand=bun%20run%20build)
 
 ### Production Setup
 
