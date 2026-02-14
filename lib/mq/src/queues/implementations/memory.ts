@@ -1,0 +1,320 @@
+import type {
+    BaseMessage,
+    IMessageQueue,
+    IQueueLifecycleProvider,
+    MessageConsumer,
+    QueueLifecycleConfig,
+    QueueName
+} from "../../core";
+import {getEnvironmentQueueName} from "../../core";
+import {Logger, LogLevel} from "@supergrowthai/utils";
+
+const logger = new Logger('InMemoryQueue', LogLevel.INFO);
+
+// Retry configuration
+const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_RETRY_AFTER_MS = 30000; // 30 seconds
+
+/**
+ * In-memory message queue implementation.
+ *
+ * @description Stores messages in process memory. Suitable for development,
+ * testing, and single-process applications where persistence is not required.
+ *
+ * @use-case Development and testing only
+ * @multi-instance NOT SAFE - messages stored in process memory, not shared between instances
+ * @persistence None - all messages lost on process restart
+ * @requires No external dependencies
+ *
+ * @example
+ * ```typescript
+ * const queue = new InMemoryQueue();
+ * queue.register('my-queue');
+ * await queue.addMessages('my-queue', [message]);
+ * ```
+ */
+export class InMemoryQueue implements IMessageQueue<string> {
+    private queues: Map<QueueName, BaseMessage<string>[]> = new Map();
+    private isRunning: boolean = false;
+    private processingIntervals: Map<QueueName, NodeJS.Timeout> = new Map();
+    private registeredQueues: Set<QueueName> = new Set();
+    private lifecycleProvider?: IQueueLifecycleProvider;
+    private lifecycleMode: 'sync' | 'async' = 'async';
+    private consumerId: string;
+
+    constructor() {
+        this.consumerId = `memory-${process.pid}-${Date.now()}`;
+    }
+
+    /**
+     * Set lifecycle configuration for queue events
+     */
+    setLifecycleConfig(config: QueueLifecycleConfig): void {
+        this.lifecycleProvider = config.lifecycleProvider;
+        this.lifecycleMode = config.mode || 'async';
+    }
+
+    /**
+     * Adds messages to the in-memory queue
+     * @param queueId - The identifier for the queue
+     * @param messages - Array of messages to add to the queue
+     */
+    async addMessages(queueId: QueueName, messages: BaseMessage<string>[]): Promise<void> {
+        queueId = getEnvironmentQueueName(queueId);
+        if (!messages.length) {
+            return;
+        }
+
+        if (!this.registeredQueues.has(queueId)) {
+            throw new Error(`Queue ${queueId} is not registered`);
+        }
+
+        if (!this.queues.has(queueId)) {
+            this.queues.set(queueId, []);
+        }
+
+        const queue = this.queues.get(queueId)!;
+        queue.push(...messages);
+
+        // Emit onMessagePublished for each message
+        if (this.lifecycleProvider?.onMessagePublished) {
+            for (const msg of messages) {
+                this.emitLifecycleEvent(
+                    this.lifecycleProvider.onMessagePublished,
+                    {
+                        queue_id: queueId,
+                        provider: 'memory' as const,
+                        message_type: msg.type,
+                        message_id: msg.id
+                    }
+                );
+            }
+        }
+
+        logger.info(`Added ${messages.length} messages to in-memory queue ${queueId}`);
+    }
+
+    /**
+     * Returns the name of this queue implementation
+     */
+    name(): string {
+        return "memory";
+    }
+
+    /**
+     * Consumes messages from the in-memory queue
+     * @param queueId - The identifier for the queue
+     * @param processor - Function to process the messages
+     * @param signal - Optional AbortSignal to stop consumption
+     */
+    async consumeMessagesStream<T = void>(
+        queueId: QueueName,
+        processor: MessageConsumer<string, T>,
+        signal?: AbortSignal
+    ): Promise<T> {
+        queueId = getEnvironmentQueueName(queueId);
+        this.isRunning = true;
+
+        if (!this.registeredQueues.has(queueId)) {
+            throw new Error(`Queue ${queueId} is not registered`);
+        }
+
+        // Create the queue if it doesn't exist
+        if (!this.queues.has(queueId)) {
+            this.queues.set(queueId, []);
+        }
+
+        // Set up a polling interval for this queue if not already set
+        if (this.processingIntervals.has(queueId)) {
+            logger.warn(`Queue ${queueId} already has a consumer registered. Multiple consumers for the same queue may cause unexpected behavior.`);
+        } else {
+            // Emit consumer connected
+            if (this.lifecycleProvider?.onConsumerConnected) {
+                this.emitLifecycleEvent(
+                    this.lifecycleProvider.onConsumerConnected,
+                    {
+                        consumer_id: this.consumerId,
+                        consumer_type: 'worker' as const,
+                        queue_id: queueId
+                    }
+                );
+            }
+
+            const interval = setInterval(async () => {
+                if (this.isRunning && (!signal || !signal.aborted)) {
+                    await this.consumeMessagesBatch(queueId, processor);
+                }
+            }, 1000);
+            this.processingIntervals.set(queueId, interval);
+
+            // Clean up on abort
+            if (signal) {
+                signal.addEventListener('abort', () => {
+                    clearInterval(interval);
+                    this.processingIntervals.delete(queueId);
+
+                    // Emit consumer disconnected
+                    if (this.lifecycleProvider?.onConsumerDisconnected) {
+                        this.emitLifecycleEvent(
+                            this.lifecycleProvider.onConsumerDisconnected,
+                            {
+                                consumer_id: this.consumerId,
+                                consumer_type: 'worker' as const,
+                                queue_id: queueId,
+                                reason: 'shutdown' as const
+                            }
+                        );
+                    }
+                });
+            }
+        }
+
+        logger.info(`Started consuming from in-memory queue ${queueId}`);
+        return undefined as T;
+    }
+
+    /**
+     * Process a batch of messages from the queue
+     * @param queueId The queue to process from
+     * @param processor Function to process tasks
+     * @param limit Maximum number of messages to process
+     * @returns void
+     */
+    async consumeMessagesBatch<T = void>(
+        queueId: QueueName,
+        processor: MessageConsumer<string, T>,
+        limit: number = 10
+    ): Promise<T> {
+        queueId = getEnvironmentQueueName(queueId);
+
+        if (!this.registeredQueues.has(queueId)) {
+            throw new Error(`Queue ${queueId} is not registered`);
+        }
+
+        if (!this.queues.has(queueId)) {
+            this.queues.set(queueId, []);
+            return undefined as T;
+        }
+
+        const queue = this.queues.get(queueId)!;
+        if (queue.length === 0) return undefined as T;
+
+        const now = new Date();
+
+        // Mark expired messages
+        for (let i = queue.length - 1; i >= 0; i--) {
+            const msg = queue[i];
+            if (msg.expires_at && msg.expires_at < now && msg.status === 'scheduled') {
+                msg.status = 'expired';
+                msg.updated_at = now;
+                queue.splice(i, 1); // Remove expired messages from queue
+                logger.debug(`Message ${msg.id} expired and removed from queue`);
+            }
+        }
+
+        // Filter messages that are ready to execute (execute_at <= now)
+        const readyMessages = queue.filter(m =>
+            m.status === 'scheduled' &&
+            m.execute_at <= now &&
+            (!m.expires_at || m.expires_at > now)
+        );
+
+        // Take up to limit messages
+        const batch = readyMessages.slice(0, limit);
+
+        if (batch.length === 0) return undefined as T;
+
+        // Remove batch from original queue
+        for (const msg of batch) {
+            const idx = queue.indexOf(msg);
+            if (idx !== -1) queue.splice(idx, 1);
+        }
+
+        // Emit onMessageConsumed for each message
+        if (this.lifecycleProvider?.onMessageConsumed) {
+            const nowMs = Date.now();
+            for (const msg of batch) {
+                const age = nowMs - (msg.created_at?.getTime() || nowMs);
+                this.emitLifecycleEvent(
+                    this.lifecycleProvider.onMessageConsumed,
+                    {
+                        queue_id: queueId,
+                        provider: 'memory' as const,
+                        message_type: msg.type,
+                        message_id: msg.id,
+                        age_ms: age
+                    }
+                );
+            }
+        }
+
+        try {
+            // Process the batch and return result
+            const result = await processor(`memory:${queueId}`, batch);
+            logger.info(`Processed ${batch.length} messages from in-memory queue ${queueId}`);
+            return result;
+        } catch (error) {
+            logger.error(`Error processing messages from in-memory queue ${queueId}:`, error);
+
+            // Implement retry logic for failed messages
+            for (const message of batch) {
+                const currentRetries = message.retries || 0;
+
+                if (currentRetries < DEFAULT_MAX_RETRIES) {
+                    const retryAfter = message.retry_after || DEFAULT_RETRY_AFTER_MS;
+                    message.retries = currentRetries + 1;
+                    message.execute_at = new Date(Date.now() + retryAfter);
+                    message.updated_at = new Date();
+                    message.status = 'scheduled';
+                    queue.push(message); // Re-add to queue for retry
+                    logger.info(`Message ${message.id} scheduled for retry ${currentRetries + 1}/${DEFAULT_MAX_RETRIES}`);
+                } else {
+                    message.status = 'failed';
+                    message.updated_at = new Date();
+                    logger.warn(`Message ${message.id} exceeded max retries, marked as failed`);
+                }
+            }
+            throw error;
+        }
+    }
+
+    private emitLifecycleEvent<T>(
+        callback: ((ctx: T) => void | Promise<void>) | undefined,
+        ctx: T
+    ): void {
+        if (!callback) return;
+        try {
+            const result = callback(ctx);
+            if (result instanceof Promise) {
+                result.catch(err => logger.error(`[MQ] Lifecycle callback error: ${err}`));
+            }
+        } catch (err) {
+            logger.error(`[MQ] Lifecycle callback error: ${err}`);
+        }
+    }
+
+    /**
+     * Stops consuming messages and cleans up resources
+     */
+    async shutdown(): Promise<void> {
+        this.isRunning = false;
+
+        for (const [queueId, interval] of this.processingIntervals.entries()) {
+            clearInterval(interval);
+            this.processingIntervals.delete(queueId);
+        }
+
+        logger.info('In-memory queue shut down');
+    }
+
+    /**
+     * Registers a queue with the message queue
+     * @param queueId The queue to register
+     */
+    register(queueId: QueueName): void {
+        const normalizedQueueId = getEnvironmentQueueName(queueId);
+        this.registeredQueues.add(normalizedQueueId);
+        logger.info(`Registered queue ${normalizedQueueId}`);
+    }
+}
+

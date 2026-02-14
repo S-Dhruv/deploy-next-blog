@@ -1,0 +1,23 @@
+{
+  "name": "@plugins/api-widget",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "next-blog build",
+    "dev": "next-blog dev",
+    "watch": "next-blog watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@supergrowthai/plugin-dev-kit": "workspace:*",
+    "typescript": "^5.9.2"
+  },
+  "nextBlog": {
+    "baseUrl": "http://localhost:3248/plugins/api-widget"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  }
+}

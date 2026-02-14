@@ -1,0 +1,23 @@
+{
+  "name": "@plugins/seo-analyzer",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "next-blog build",
+    "dev": "next-blog dev --port 62948",
+    "watch": "next-blog watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@supergrowthai/plugin-dev-kit": "workspace:*",
+    "typescript": "^5.7.3",
+    "vite": "^7.3.1"
+  },
+  "nextBlog": {
+    "baseUrl": "http://localhost:3248/plugins/seo-analyzer"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.1.18",
+    "tailwindcss": "^4.1.18"
+  }
+}

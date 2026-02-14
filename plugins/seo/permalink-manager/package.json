@@ -1,0 +1,22 @@
+{
+  "name": "@plugins/permalink-manager",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "next-blog build",
+    "dev": "next-blog dev --port 60717",
+    "watch": "next-blog watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@supergrowthai/plugin-dev-kit": "workspace:*",
+    "@tailwindcss/vite": "^4.1.18",
+    "tailwindcss": "^4.1.18",
+    "typescript": "^5.0.0",
+    "vite": "^7.3.1"
+  },
+  "nextBlog": {
+    "baseUrl": "http://localhost:3248/plugins/permalink-manager",
+    "devBaseUrl": "http://localhost:3001"
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "name": "@supergrowthai/next-blog-workspace",
+  "version": "1.0.0",
+  "description": "Workspace for next-blog packages",
+  "type": "module",
+  "private": true,
+  "workspaces": [
+    "lib/*",
+    "packages/*",
+    "plugins/*",
+    "plugins/seo/*",
+    "plugins/internal/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "turbo build --filter='./packages/*' --filter='./lib/*'",
+    "build:packages": "turbo build --filter='./packages/*'",
+    "build:lib": "turbo build --filter='./lib/*'",
+    "dev": "turbo build --filter='./packages/*' --filter='./lib/*' && turbo dev --filter='./packages/*' --filter='./lib/*' --concurrency=30",
+    "dev:packages": "turbo build --filter='./packages/*' && turbo dev --filter='./packages/*' --concurrency=30",
+    "dev:fast": "turbo dev --filter='./packages/*' --filter='./lib/*'",
+    "dev:fast:packages": "turbo dev --filter='./packages/*'",
+    "clean": "turbo clean --filter='./packages/*' --filter='./lib/*'",
+    "typecheck": "turbo typecheck --filter='./packages/*' --filter='./lib/*'",
+    "typecheck:packages": "turbo typecheck --filter='./packages/*'",
+    "typecheck:lib": "turbo typecheck --filter='./lib/*'",
+    "publint": "turbo publint --filter='./packages/*' --filter='./lib/*'",
+    "app:dev": "turbo dev --filter='./apps/test-app'",
+    "app:build": "turbo build --filter='./apps/test-app'"
+  },
+  "keywords": [
+    "vite",
+    "nextjs",
+    "react",
+    "cms",
+    "blogging",
+    "headless-cms",
+    "next-js",
+    "secure"
+  ],
+  "dependencies": {
+    "gemini": "^7.5.2",
+    "moment": "^2.30.1",
+    "rimraf": "^6.1.2",
+    "vite": "^7.3.1"
+  },
+  "author": "Capt ADExp <tech@developer.toys>",
+  "license": "MIT",
+  "packageManager": "bun@1.3.2",
+  "devDependencies": {
+    "@typescript/native-preview": "^7.0.0-dev.20260127.1",
+    "jsdom": "^27.4.0",
+    "next": "^16.1.6",
+    "turbo": "^2.7.6",
+    "typescript": "^5.9.3"
+  },
+  "trustedDependencies": [
+    "@tailwindcss/oxide",
+    "bun",
+    "esbuild",
+    "sharp"
+  ]
+}

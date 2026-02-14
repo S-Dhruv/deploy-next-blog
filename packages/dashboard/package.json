@@ -1,0 +1,64 @@
+{
+  "name": "@supergrowthai/next-blog-dashboard",
+  "version": "1.0.0",
+  "description": "Dashboard components for next-blog",
+  "private": true,
+  "repository": "git+https://github.com/captadexp/next-blog.git",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "clean": "rimraf dist",
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "nextjs",
+    "react",
+    "cms",
+    "blogging",
+    "dashboard"
+  ],
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "author": "Capt ADExp <tech@developer.toys>",
+  "license": "ISC",
+  "dependencies": {
+    "@supergrowthai/jsx-runtime": "workspace:*",
+    "@supergrowthai/next-blog-types": "workspace:*",
+    "dom-serializer": "^2.0.0",
+    "domelementtype": "^2.3.0",
+    "domhandler": "^5.0.3",
+    "htmlparser2": "^10.0.0",
+    "preact": "^10.28.2",
+    "preact-render-to-string": "^6.6.5",
+    "preact-iso": "^2.11.1"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@supergrowthai/utils": "workspace:*",
+    "@editorjs/editorjs": "^2.31.1",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/vite": "^4.1.18",
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.1.6",
+    "daisyui": "^5.5.14",
+    "idb": "^8.0.3",
+    "react-hot-toast": "^2.5.2",
+    "tailwindcss": "^4.1.18",
+    "vite": "^7.3.1",
+    "vite-plugin-css-injected-by-js": "^3.5.2",
+    "vite-plugin-dts": "^4.5.4",
+    "vite-plugin-static-copy": "^3.1.5"
+  }
+}
