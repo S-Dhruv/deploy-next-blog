@@ -27,6 +27,7 @@ if (useMongo) {
     // Use FileDBAdapter for local development by default
     const dataPath = path.join(process.cwd(), 'blog-data');
     if (!fs.existsSync(dataPath)) {
+
         fs.mkdirSync(dataPath, {recursive: true});
     }
     dbProvider = async () => new adapters.FileDBAdapter(`${dataPath}/`);
