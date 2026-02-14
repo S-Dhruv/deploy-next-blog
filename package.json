@@ -11,7 +11,7 @@
     "plugins/seo/*",
     "plugins/internal/*",
     "apps/*",
-    "template-deploy/*"
+    "template-deploy"
   ],
   "scripts": {
     "build": "turbo build --filter='./packages/*' --filter='./lib/*'",
