@@ -124,7 +124,7 @@ next-blog/
 - **UI Framework**: Preact for dashboard, React for plugins
 
 ## 🚀 Quick Start
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fcaptadexp%2Fnext-blog%2Ftree%2Fmain%2Ftemplate-deploy&env=MONGODB_URI,MONGODB_DB_NAME,SESSION_SECRET,ADMIN_EMAIL,S3_BUCKET,S3_REGION,S3_ACCESS_KEY,S3_SECRET_KEY&project-name=my-next-blog&repository-name=my-next-blog-cms)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FS-Dhruv%2Fdeploy-next-blog%2Ftree%2Fmain%2Ftemplate-deploy&env=MONGODB_URI,MONGODB_DB_NAME,SESSION_SECRET,ADMIN_EMAIL,S3_BUCKET,S3_REGION,S3_ACCESS_KEY,S3_SECRET_KEY&project-name=my-next-blog&repository-name=my-next-blog-cms)
 
 ### Production Setup
 
