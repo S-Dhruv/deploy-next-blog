@@ -1,4 +1,5 @@
-import {MongoDBAdapter, FileDBAdapter, type DatabaseAdapter} from "@supergrowthai/next-blog";
+import * as adapters from "@supergrowthai/next-blog/adapters";
+import type {DatabaseAdapter} from "@supergrowthai/next-blog";
 import {MongoClient} from "mongodb";
 import path from "path";
 import fs from "fs";
@@ -19,16 +20,17 @@ if (useMongo) {
 
     dbProvider = async () => {
         const client = await clientPromise;
-        return new MongoDBAdapter(process.env.MONGO_DB_NAME || "next-blog", client);
+        return new adapters.MongoDBAdapter(process.env.MONGO_DB_NAME || "next-blog", client);
     };
     console.log("Using MongoDBAdapter.");
 } else {
     // Use FileDBAdapter for local development by default
     const dataPath = path.join(process.cwd(), 'blog-data');
     if (!fs.existsSync(dataPath)) {
+
         fs.mkdirSync(dataPath, {recursive: true});
     }
-    dbProvider = async () => new FileDBAdapter(`${dataPath}/`);
+    dbProvider = async () => new adapters.FileDBAdapter(`${dataPath}/`);
     console.log("Using FileDBAdapter for local development. Set MONGO_DB_URL to use MongoDB locally.");
 }
 
