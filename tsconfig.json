@@ -1,39 +1,28 @@
 {
   "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
-    "baseUrl": ".",
-    "declaration": true,
-    "declarationMap": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
-    "module": "ESNext",
-    "allowImportingTsExtensions": true,
-    "moduleResolution": "bundler",
-    "skipDefaultLibCheck": true,
     "skipLibCheck": true,
     "strict": true,
-    "strictNullChecks": true,
-    "stripInternal": true,
     "noEmit": true,
-    "target": "es2020",
-    "jsx": "react-jsx",
-    "jsxImportSource": "preact",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": "./template-deploy",
+    "plugins": [
+      {
+        "name": "next"
+      }
     ],
-    "outDir": ".",
-    "rootDir": "src"
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": [
-    "src/**/*"
-  ],
-  "exclude": [
-    "*.js",
-    "*.d.ts",
-    "vite.config.ts"
-  ]
+    "next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
 }

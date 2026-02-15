@@ -1,8 +1,0 @@
-src/
-node_modules/
-.DS_Store
-*.log
-tsconfig.json
-tsconfig.types.json
-vite.config.ts
-.npmrc

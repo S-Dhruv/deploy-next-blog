@@ -1,3 +1,0 @@
-#!/usr/bin/env bun
-// This file enables: bunx @supergrowthai/plugin-dev-kit my-plugin
-import './bin/create.ts';

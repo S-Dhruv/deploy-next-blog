@@ -1,64 +1,28 @@
 {
-  "name": "@supergrowthai/next-blog-workspace",
+  "name": "next-blog-starter",
   "version": "1.0.0",
-  "description": "Workspace for next-blog packages",
-  "type": "module",
   "private": true,
-  "workspaces": [
-    "lib/*",
-    "packages/*",
-    "plugins/*",
-    "plugins/seo/*",
-    "plugins/internal/*",
-    "apps/*",
-    "template-deploy"
-  ],
   "scripts": {
-    "build": "turbo build --filter='./packages/*' --filter='./lib/*'",
-    "build:packages": "turbo build --filter='./packages/*'",
-    "build:lib": "turbo build --filter='./lib/*'",
-    "dev": "turbo build --filter='./packages/*' --filter='./lib/*' && turbo dev --filter='./packages/*' --filter='./lib/*' --concurrency=30",
-    "dev:packages": "turbo build --filter='./packages/*' && turbo dev --filter='./packages/*' --concurrency=30",
-    "dev:fast": "turbo dev --filter='./packages/*' --filter='./lib/*'",
-    "dev:fast:packages": "turbo dev --filter='./packages/*'",
-    "clean": "turbo clean --filter='./packages/*' --filter='./lib/*'",
-    "typecheck": "turbo typecheck --filter='./packages/*' --filter='./lib/*'",
-    "typecheck:packages": "turbo typecheck --filter='./packages/*'",
-    "typecheck:lib": "turbo typecheck --filter='./lib/*'",
-    "publint": "turbo publint --filter='./packages/*' --filter='./lib/*'",
-    "app:dev": "turbo dev --filter='./apps/test-app'",
-    "app:build": "turbo build --filter='./apps/test-app'",
-    "dev:template": "turbo build --filter='./packages/*' && cd template-deploy && bun install && bun run dev"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
   },
-  "keywords": [
-    "vite",
-    "nextjs",
-    "react",
-    "cms",
-    "blogging",
-    "headless-cms",
-    "next-js",
-    "secure"
-  ],
   "dependencies": {
-    "moment": "^2.30.1",
-    "rimraf": "^6.1.2",
-    "vite": "^7.3.1"
+    "next": "^14.2.3",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@supergrowthai/next-blog": "3.0.4",
+    "@aws-sdk/client-s3": "^3.975.0",
+    "@supergrowthai/next-blog-ui": "2.0.4",
+    "@aws-sdk/lib-storage": "^3.975.0",
+    "mongodb": "^6.8.0",
+    "@supergrowthai/next-blog-types": "^1.0.8"
   },
-  "author": "Capt ADExp <tech@developer.toys>",
-  "license": "MIT",
-  "packageManager": "bun@1.3.2",
   "devDependencies": {
-    "@typescript/native-preview": "^7.0.0-dev.20260127.1",
-    "jsdom": "^27.4.0",
-    "next": "^16.1.6",
-    "turbo": "^2.7.6",
-    "typescript": "^5.9.3"
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "typescript": "^5.0.0"
   },
-  "trustedDependencies": [
-    "@tailwindcss/oxide",
-    "bun",
-    "esbuild",
-    "sharp"
-  ]
+  "packageManager": "bun@1.3.2"
 }
