@@ -13,7 +13,7 @@ const nextConfig = {
 
     experimental: {
         // Tell Next.js NOT to bundle mongodb
-        serverExternalPackages: ['mongodb'],
+        serverComponentsExternalPackages: ['mongodb'],
     },
 
     webpack: (config) => {

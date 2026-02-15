@@ -12,9 +12,9 @@ import {
     RelatedBlogs
 } from '@supergrowthai/next-blog-ui';
 import '@supergrowthai/next-blog-ui/style.css';
-import {dbProvider} from "@/lib/db";
+import {dbProvider} from "../../../lib/db";
 import {SEOAnalyzer} from "../_components/seo/SEOAnalyzer";
-import nextBlogConfig from "@/lib/next-blog-config";
+import nextBlogConfig from "../../../lib/next-blog-config";
 import {createServerSDK} from "@supergrowthai/next-blog/next";
 
 /**
