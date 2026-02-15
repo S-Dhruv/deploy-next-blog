@@ -1,5 +1,5 @@
 import {nextBlog} from "@supergrowthai/next-blog/next";
-import nextBlogConfig from "@/lib/next-blog-config";
+import nextBlogConfig from "../../../../lib/next-blog-config";
 
 
 // Initialize Next-Blog

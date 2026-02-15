@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import {dbProvider} from '@/lib/db';
+import {dbProvider} from '../lib/db';
 import styles from './page.module.css';
 import { Key, ReactElement, JSXElementConstructor, ReactNode, ReactPortal, AwaitedReactNode } from "react";
 
